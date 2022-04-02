@@ -8,13 +8,13 @@ import DialogTitle from "@mui/material/DialogTitle";
 import Snackbar from "@mui/material/Snackbar";
 import TextField from "@mui/material/TextField";
 import { useState } from "react";
-import { createFolder, createTodo } from "../../lib/api";
+import { updateFolder, updateTodo } from "../../lib/api";
 import { useTodos } from "../../providers/TodoProvider";
 
-export default function AddModal({ isFolder, open, handleClose }) {
+export default function EditModal({ isFolder, open, handleClose, data }) {
   const { setReRender, folders, reRender } = useTodos();
-  const [name, setName] = useState("");
-  const [folder, setFolder] = useState(null);
+  const [name, setName] = useState(data.name);
+  const [folder, setFolder] = useState(data.folder);
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleChangeName = (event) => {
@@ -27,11 +27,11 @@ export default function AddModal({ isFolder, open, handleClose }) {
 
   const handleSubmit = async () => {
     if (isFolder) {
-      await createFolder({
+      await updateFolder(data.id, {
         name,
       });
     } else {
-      await createTodo({
+      await updateTodo(data.id, {
         name,
         folder: folder ? folder : undefined,
       });
@@ -52,7 +52,7 @@ export default function AddModal({ isFolder, open, handleClose }) {
     <>
       <Dialog open={open} onClose={handleClose} fullWidth>
         <DialogTitle>
-          Create new {isFolder ? "folder" : "To-Do item"}
+          Editing {data.name} {isFolder ? "folder" : "To-Do item"}
         </DialogTitle>
         <DialogContent>
           <TextField
@@ -89,7 +89,7 @@ export default function AddModal({ isFolder, open, handleClose }) {
             }}
             variant="contained"
           >
-            Create
+            Edit
           </Button>
         </DialogActions>
       </Dialog>
@@ -103,7 +103,7 @@ export default function AddModal({ isFolder, open, handleClose }) {
           sx={{ width: "100%" }}
           onClose={handleCloseSnackbar}
         >
-          {name} created succesfully
+          {name} edited succesfully
         </Alert>
       </Snackbar>
     </>

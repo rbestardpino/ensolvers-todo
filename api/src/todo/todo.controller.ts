@@ -44,18 +44,21 @@ export class TodoController {
   @Put('todo/:id')
   async updateTodo(
     @Param('id') id: string,
-    @Body() todoData: { name: string; folder?: string },
+    @Body() todoData: { name?: string; folder?: string; done?: boolean },
   ): Promise<TodoModel> {
-    const { name, folder } = todoData;
+    const { name, folder, done } = todoData;
     return this.todoService.updateTodo({
       where: { id: Number(id) },
       data: {
         name,
-        folder: {
-          connect: {
-            id: Number(folder),
-          },
-        },
+        folder: folder
+          ? {
+              connect: {
+                id: Number(folder),
+              },
+            }
+          : undefined,
+        done,
       },
     });
   }

@@ -1,29 +1,48 @@
-import DeleteIcon from "@mui/icons-material/Delete";
-import { Typography } from "@mui/material";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import Checkbox from "@mui/material/Checkbox";
 import IconButton from "@mui/material/IconButton";
 import ListItem from "@mui/material/ListItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
+import Tooltip from "@mui/material/Tooltip";
+import Typography from "@mui/material/Typography";
 import { useState } from "react";
+import { deleteTodo, updateTodo } from "../../lib/api";
+import { useTodos } from "../../providers/TodoProvider";
+import EditButton from "../EditButton/EditButton";
 
-export default function TodoItem() {
-  const [checked, setChecked] = useState(false);
+export default function TodoItem({ todo }) {
+  const [checked, setChecked] = useState(todo.done);
+  const { setReRender, reRender } = useTodos();
 
   const handleCheck = async () => {
-    setChecked(!checked);
+    updateTodo(todo.id, {
+      done: !checked,
+    }).then(() => setChecked(!checked));
   };
 
   const handleDelete = async () => {
-    console.log("delete");
+    deleteTodo(todo.id).then(() => setReRender(reRender + 1));
   };
 
   return (
     <ListItem
       secondaryAction={
-        <IconButton edge="end" aria-label="delete" onClick={handleDelete}>
-          <DeleteIcon />
-        </IconButton>
+        <>
+          <Tooltip title="Edit folder">
+            <EditButton data={todo} />
+          </Tooltip>
+          <Tooltip title="Delete folder">
+            <IconButton
+              sx={{ ml: 1 }}
+              edge="end"
+              aria-label="delete"
+              onClick={handleDelete}
+            >
+              <DeleteOutlinedIcon />
+            </IconButton>
+          </Tooltip>
+        </>
       }
     >
       <ListItemIcon>
@@ -38,9 +57,9 @@ export default function TodoItem() {
         primary={
           <Typography
             noWrap
-            sx={checked ? { textDecoration: "line-through" } : {}}
+            sx={checked ? { textDecoration: "line-through", mr: 3 } : { mr: 3 }}
           >
-            Todo item 1
+            {todo.name}
           </Typography>
         }
       />

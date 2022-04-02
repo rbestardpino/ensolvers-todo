@@ -8,11 +8,15 @@ import {
   Put,
 } from '@nestjs/common';
 import { Folder as FolderModel } from '@prisma/client';
+import { TodoService } from 'src/todo/todo.service';
 import { FolderService } from './folder.service';
 
 @Controller()
 export class FolderController {
-  constructor(private readonly folderService: FolderService) {}
+  constructor(
+    private readonly folderService: FolderService,
+    private readonly todoService: TodoService,
+  ) {}
 
   @Get('folder/:id')
   async getFolderById(@Param('id') id: string): Promise<FolderModel> {
@@ -20,7 +24,7 @@ export class FolderController {
   }
 
   @Get('folders')
-  async getTodos(): Promise<FolderModel[]> {
+  async getFolders(): Promise<FolderModel[]> {
     return this.folderService.folders({});
   }
 
@@ -50,6 +54,18 @@ export class FolderController {
 
   @Delete('folder/:id')
   async deleteFolder(@Param('id') id: string): Promise<FolderModel> {
+    const todos = await this.todoService.todos({
+      where: {
+        folderId: {
+          equals: Number(id),
+        },
+      },
+    });
+    todos.forEach((todo) => {
+      this.todoService.deleteTodo({
+        id: todo.id,
+      });
+    });
     return this.folderService.deleteFolder({ id: Number(id) });
   }
 }
