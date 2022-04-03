@@ -31,13 +31,14 @@ export class TodoController {
     const { name, folder } = todoData;
     return this.todoService.createTodo({
       name,
-      folder: folder
-        ? {
-            connect: {
-              id: Number(folder),
-            },
-          }
-        : undefined,
+      folder:
+        folder !== 'None'
+          ? {
+              connect: {
+                id: Number(folder),
+              },
+            }
+          : undefined,
     });
   }
 
@@ -51,13 +52,18 @@ export class TodoController {
       where: { id: Number(id) },
       data: {
         name,
-        folder: folder
-          ? {
-              connect: {
-                id: Number(folder),
-              },
-            }
-          : undefined,
+        folder:
+          folder === 'None'
+            ? {
+                disconnect: true,
+              }
+            : folder
+            ? {
+                connect: {
+                  id: Number(folder),
+                },
+              }
+            : undefined,
         done,
       },
     });
