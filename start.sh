@@ -1,19 +1,16 @@
 #!/usr/bin/env bash
 
-echo "--- In order to properly configure the app you will be prompt to enter your user password ---"
-
 echo "--- Started configuring database ---"
 read -p "Enter database name: " DATABASE_NAME
 read -s -p "Enter database password: " PASSWORD
-
-sudo -i -u postgres
-psql -c "ALTER USER postgres PASSWORD '$PASSWORD';"
-createdb $DATABASE_NAME
+sudo -u postgres psql -c "ALTER USER postgres PASSWORD '$PASSWORD';"
+sudo -u postgres createdb $DATABASE_NAME
 echo "--- Finished configuring database ---"
 
-echo "--- Started loading database info into API ---"
-echo "DATABASE_URL=\"postgresql://postgresql:$PASSWORD@localhost:5432/$DATABASE_NAME?schema=public">api/.env
-echo "--- Finished loading database info into API ---"
+echo "--- Started loading config variables ---"
+echo "DATABASE_URL=\"postgresql://postgres:$PASSWORD@localhost:5432/$DATABASE_NAME?schema=public\"">api/.env
+echo "REACT_APP_API_URL=http://localhost:3001">client/.env
+echo "--- Finished loading config variables ---"
 
 echo "--- Started installing app requirements ---"
 cd api
@@ -27,7 +24,5 @@ cd ..
 echo "--- Finished installing app requirements ---" 
 
 echo "--- Starting app ---"
-cd api
-npm run start:prod
-cd ../client
-npm run start:prod
+cd api; npm run start:prod &
+cd ../client; npm run start:prod

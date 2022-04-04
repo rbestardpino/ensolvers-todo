@@ -21,15 +21,16 @@
 git clone https://github.com/rbestardpino/ensolvers-todo.git
 ```
 
-2. Go to the project folder and run the start script:
+2. Go to the project folder and run the start script with sudo:
 
 ```
-bash start.sh
+sudo bash start.sh
 ```
 
-3. Use the app by opening http://localhost:3001 in a browser
+3. Use the app by opening http://localhost:3000 in a browser
 
 ## Tested in:
 
 - Windows 10
 - Ubuntu 20.04
+
